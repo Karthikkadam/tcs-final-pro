@@ -7,7 +7,9 @@ import { User, Booking, Payment, Feedback, LoginResponse } from '../models/model
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'http://localhost:8080/api';
+  private baseUrl = window.location.hostname === 'localhost' && window.location.port === '4200' && false
+    ? 'http://localhost:8080/api'
+    : 'https://tcs-final-pro-backend.onrender.com/api';
 
   constructor(private http: HttpClient) {}
 
