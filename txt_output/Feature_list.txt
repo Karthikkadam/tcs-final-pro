@@ -1,0 +1,25 @@
+Sheet: Feature list
+================================================================================
+
+Customer Features
+Customer Registration -Web
+Customer Login-Web
+View Home page-Web
+Booking a parcel-Web
+Paying for a parcel-Web
+Cancelling a booking-Web
+Tracking a parcel-Web
+Giving feedback for parcel-Web
+
+
+Officer Features 
+Officer Login-Web
+View Home page-Web
+Booking a parcel-Web
+Tracking a parcel-Web
+Update delivery status-Web
+Update pick up,drop off time -Web
+Read Feedback-Web
+View all bookings-Web
+Status change to cancel-Web
+

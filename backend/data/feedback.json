@@ -1,0 +1,17 @@
+[ {
+  "feedbackId" : "FDB00001",
+  "bookingId" : "BKG00001",
+  "customerId" : "CUS00001",
+  "customerName" : "Jane Doe",
+  "description" : "Excellent express delivery service! Arrived right on schedule.",
+  "rating" : 5,
+  "dateTime" : "2026-08-24 19:44:41"
+}, {
+  "feedbackId" : "FDB00002",
+  "bookingId" : "BKG00003",
+  "customerId" : "CUS00002",
+  "customerName" : "Jane Doe",
+  "description" : "Excellent express delivery service! Arrived right on schedule.",
+  "rating" : 5,
+  "dateTime" : "2026-08-24 19:45:16"
+} ]

@@ -1,0 +1,34 @@
+[ {
+  "customerId" : "OFC00001",
+  "name" : "Admin Officer",
+  "email" : "admin@parcel.com",
+  "countryCode" : "+91",
+  "mobile" : "9999999999",
+  "address" : "Parcel Management HQ, Mumbai",
+  "zipCode" : "400001",
+  "password" : "e86f78a8a3caf0b60d8e74e5942aa6d86dc150cd3c03338aef25b7d2d7e3acc7",
+  "role" : "OFFICER",
+  "preferences" : "Default admin account"
+}, {
+  "customerId" : "CUS00001",
+  "name" : "Jane Doe",
+  "email" : "jane@example.com",
+  "countryCode" : "+91",
+  "mobile" : "9876543210",
+  "address" : "456 Park St, Kolkata 700016",
+  "zipCode" : "700016",
+  "password" : "ff7bd97b1a7789ddd2775122fd6817f3173672da9f802ceec57f284325bf589f",
+  "role" : "CUSTOMER",
+  "preferences" : "Email notifications for all updates"
+}, {
+  "customerId" : "CUS00002",
+  "name" : "Jane Doe",
+  "email" : "jane_1787580916@example.com",
+  "countryCode" : "+91",
+  "mobile" : "9876543210",
+  "address" : "456 Park St, Kolkata 700016",
+  "zipCode" : "700016",
+  "password" : "ff7bd97b1a7789ddd2775122fd6817f3173672da9f802ceec57f284325bf589f",
+  "role" : "CUSTOMER",
+  "preferences" : "Email notifications for all updates"
+} ]

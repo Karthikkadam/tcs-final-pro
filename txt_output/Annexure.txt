@@ -1,0 +1,28 @@
+Sheet: Annexure
+================================================================================
+
+		
+	Purpose	Customers can register, book parcels, upload details, view bills, track parcels, cancel bookings, and give feedback. Admins can book parcels, track deliveries, update statuses, manage schedules, and view feedback.
+		
+	Benefits	A streamlined platform for easy parcel booking, tracking, and management, ensuring efficiency for both customers and admins.
+		
+	Roles	Previleges/Functionalities
+	Customer	1) Customer can create an account using personal information to use this application.
+2)Customer can book a parcel
+3)Customer can track all parcel bookings
+4)Customer can view all bookings made
+5)Customer can pay for a parcel to confirm booking
+6)Customer can give feedback to parcel
+7)Customer can cancel a booked parcel
+	Admin	1) An admin can also make parcel bookings for customer
+2) An admin can track parcels booked by both admin and customer
+3) Admin can update the delivery status of parcels
+4) Admin can update delivery and drop off pick up time of both customer and admin parcel bookings
+5) Admin can view all bookings made by customer cand admin
+6)Admin can view all feedback made by all customers
+		
+		
+	References	
+	1	https://shipping.envia.com/
+	2	https://www.delhivery.com/
+	3	https://app.shiprocket.in/

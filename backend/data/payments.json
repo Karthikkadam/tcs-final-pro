@@ -1,0 +1,19 @@
+[ {
+  "paymentId" : "PAY00001",
+  "transactionId" : "TXN00001",
+  "bookingId" : "BKG00001",
+  "amount" : 210.0,
+  "cardType" : "Credit",
+  "cardLastFour" : "3333",
+  "transactionDate" : "2026-08-24 19:44:41",
+  "status" : "Success"
+}, {
+  "paymentId" : "PAY00002",
+  "transactionId" : "TXN00002",
+  "bookingId" : "BKG00003",
+  "amount" : 210.0,
+  "cardType" : "Credit",
+  "cardLastFour" : "3333",
+  "transactionDate" : "2026-08-24 19:45:16",
+  "status" : "Success"
+} ]

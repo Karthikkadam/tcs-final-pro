@@ -1,0 +1,36 @@
+# Operating System Files
+.DS_Store
+Thumbs.db
+*.log
+
+# Maven & Java
+target/
+*.class
+*.jar
+*.war
+*.ear
+.mvn/wrapper/maven-wrapper.jar
+backend/maven/
+backend/target/
+
+# Node & Angular
+node_modules/
+dist/
+.angular/
+frontend/dist/
+frontend/.angular/
+frontend/node_modules/
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
