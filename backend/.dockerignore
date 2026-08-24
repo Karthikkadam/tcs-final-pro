@@ -1,0 +1,7 @@
+target/
+maven/
+*.log
+.git
+.gitignore
+.mvn/
+mvnw.cmd
