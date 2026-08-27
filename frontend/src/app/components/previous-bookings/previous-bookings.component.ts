@@ -14,35 +14,62 @@ import { Booking } from '../../models/models';
   template: `
     <div class="page-container">
       <app-navbar></app-navbar>
-      <div class="main-content">
+
+      <main class="main-content">
+        <!-- Header -->
         <div class="page-header">
-          <div class="header-content">
-            <div>
-              <h1>Previous Bookings</h1>
-              <p>View, filter, track, and manage your parcel booking history</p>
-            </div>
-            <div class="header-actions" *ngIf="bookings.length > 10">
-              <button class="btn btn-secondary" (click)="downloadReport('xls')">📊 Export .XLS</button>
-              <button class="btn btn-secondary" (click)="downloadReport('pdf')">📄 Export .PDF</button>
-            </div>
+          <div>
+            <h1>My Shipment History</h1>
+            <p>View, filter, track milestones, and manage all your parcel bookings</p>
+          </div>
+
+          <div class="header-actions">
+            <button class="btn btn-secondary btn-sm" (click)="downloadReport('xls')" [disabled]="bookings.length === 0">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export Excel (.XLS)
+            </button>
+            <button class="btn btn-secondary btn-sm" (click)="downloadReport('pdf')" [disabled]="bookings.length === 0">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Export Document
+            </button>
           </div>
         </div>
 
-        <div *ngIf="successMessage" class="alert alert-success">✅ {{ successMessage }}</div>
-        <div *ngIf="errorMessage" class="alert alert-error">❌ {{ errorMessage }}</div>
+        <div *ngIf="successMessage" class="alert alert-success">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>{{ successMessage }}</span>
+        </div>
 
-        <!-- Filter Bar -->
-        <div class="glass-card filter-card">
-          <div class="filter-bar">
-            <div class="form-group">
+        <div *ngIf="errorMessage" class="alert alert-error">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          <span>{{ errorMessage }}</span>
+        </div>
+
+        <!-- Filter Bar Card -->
+        <div class="card filter-card">
+          <div class="filter-grid">
+            <div class="form-group" style="margin-bottom: 0;">
               <label>Filter by Booking ID</label>
-              <input type="text" class="form-control" [(ngModel)]="filterBookingId" (ngModelChange)="applyFilter()" placeholder="e.g. BKG00001">
+              <input 
+                type="text" 
+                class="form-control" 
+                [(ngModel)]="filterBookingId" 
+                (ngModelChange)="applyFilter()" 
+                placeholder="e.g. BKG00001"
+              />
             </div>
-            <div class="form-group">
+
+            <div class="form-group" style="margin-bottom: 0;">
               <label>Filter by Booking Date</label>
-              <input type="date" class="form-control" [(ngModel)]="filterDate" (ngModelChange)="applyFilter()">
+              <input 
+                type="date" 
+                class="form-control" 
+                [(ngModel)]="filterDate" 
+                (ngModelChange)="applyFilter()"
+              />
             </div>
-            <div class="form-group">
+
+            <div class="form-group" style="margin-bottom: 0;">
               <label>Filter by Status</label>
               <select class="form-control" [(ngModel)]="filterStatus" (ngModelChange)="applyFilter()">
                 <option value="">All Statuses</option>
@@ -56,29 +83,34 @@ import { Booking } from '../../models/models';
                 <option value="Cancelled">Cancelled</option>
               </select>
             </div>
-            <div class="form-group" style="flex: 0 0 auto;">
-              <button class="btn btn-secondary" (click)="resetFilters()">Reset Filters</button>
+
+            <div class="filter-reset-col">
+              <button class="btn btn-secondary btn-block" (click)="resetFilters()">
+                Reset
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Bookings Table -->
-        <div class="glass-card table-section" style="margin-top: 20px;">
-          <div *ngIf="loading" class="loading-spinner"><div class="spinner"></div></div>
+        <!-- Data Table Card -->
+        <div class="card table-card" style="margin-top: 20px;">
+          <div *ngIf="loading" class="loading-spinner">
+            <div class="spinner"></div>
+          </div>
 
           <div *ngIf="!loading && filteredBookings.length === 0" class="empty-state">
-            <p>No bookings match the selected criteria.</p>
+            <p>No shipments match the selected filters.</p>
           </div>
 
           <div class="table-container" *ngIf="!loading && filteredBookings.length > 0">
             <table>
               <thead>
                 <tr>
-                  <th>Customer ID</th>
                   <th>Booking ID</th>
                   <th>Booking Date</th>
-                  <th>Receiver Name</th>
-                  <th>Delivered Address</th>
+                  <th>Receiver</th>
+                  <th>Destination Address</th>
+                  <th>Delivery Speed</th>
                   <th>Amount</th>
                   <th>Status</th>
                   <th>Actions</th>
@@ -86,34 +118,60 @@ import { Booking } from '../../models/models';
               </thead>
               <tbody>
                 <tr *ngFor="let b of paginatedBookings">
-                  <td>{{ b.customerId }}</td>
-                  <td><strong>{{ b.bookingId }}</strong></td>
-                  <td>{{ b.bookingDate }}</td>
-                  <td>{{ b.receiverName }}</td>
-                  <td>{{ b.receiverAddress }}</td>
-                  <td class="amount-cell">₹{{ b.parcelServiceCost }}</td>
                   <td>
-                    <span class="badge" [ngClass]="'badge-' + b.status.toLowerCase().replace(' ', '')">{{ b.status }}</span>
+                    <strong class="font-mono">{{ b.bookingId }}</strong>
                   </td>
-                  <td class="action-cell">
-                    <a [routerLink]="'/customer/invoice/' + b.bookingId" class="btn btn-sm btn-secondary" title="View Invoice">📄 Invoice</a>
-                    
-                    <button *ngIf="b.status === 'Delivered'" class="btn btn-sm btn-success" (click)="openFeedbackModal(b)">⭐ Feedback</button>
-                    
-                    <a *ngIf="b.status === 'New'" [routerLink]="'/customer/payment/' + b.bookingId" class="btn btn-sm btn-primary">💳 Pay</a>
-                    
-                    <a *ngIf="b.status === 'Booked'" routerLink="/customer/cancel" class="btn btn-sm btn-danger" title="Cancel Booking">✕ Cancel</a>
+                  <td>{{ b.bookingDate }}</td>
+                  <td>
+                    <strong>{{ b.receiverName }}</strong>
+                    <div style="font-size: 11px; color: var(--text-muted);">{{ b.receiverMobile }}</div>
+                  </td>
+                  <td>
+                    <div style="max-width: 220px; font-size: 12.5px; line-height: 1.3;">
+                      {{ b.receiverAddress }}
+                    </div>
+                  </td>
+                  <td>{{ b.parcelDeliveryType }}</td>
+                  <td><strong class="text-success">₹{{ b.parcelServiceCost }}</strong></td>
+                  <td>
+                    <span class="badge" [ngClass]="'badge-' + b.status.toLowerCase().replace(' ', '')">
+                      {{ b.status }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="action-buttons-wrap">
+                      <a [routerLink]="'/customer/invoice/' + b.bookingId" class="btn btn-secondary btn-sm" title="View Tax Invoice">
+                        Invoice
+                      </a>
+                      
+                      <button *ngIf="b.status === 'Delivered'" class="btn btn-success btn-sm" (click)="openFeedbackModal(b)">
+                        ★ Feedback
+                      </button>
+                      
+                      <a *ngIf="b.status === 'New'" [routerLink]="'/customer/payment/' + b.bookingId" class="btn btn-primary btn-sm">
+                        Pay
+                      </a>
+                      
+                      <a *ngIf="b.status === 'Booked'" routerLink="/customer/cancel" class="btn btn-outline-danger btn-sm">
+                        Cancel
+                      </a>
+
+                      <a [routerLink]="['/customer/tracking']" [queryParams]="{ id: b.bookingId }" class="btn btn-secondary btn-sm" title="Track Live">
+                        Track
+                      </a>
+                    </div>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <!-- Pagination -->
-          <div class="pagination-container" *ngIf="totalPages > 1">
-            <div class="pagination-info">
-              Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ getEndIndex() }} of {{ filteredBookings.length }} bookings
+          <!-- Pagination Bar -->
+          <div class="pagination-bar" *ngIf="totalPages > 1">
+            <div class="pagination-summary">
+              Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ getEndIndex() }} of {{ filteredBookings.length }} records
             </div>
+
             <div class="pagination">
               <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">« Prev</button>
               <button *ngFor="let p of pagesArray" (click)="goToPage(p)" [class.active]="currentPage === p">{{ p }}</button>
@@ -126,51 +184,66 @@ import { Booking } from '../../models/models';
         <div *ngIf="showFeedbackModal" class="modal-overlay" (click)="closeFeedbackModal()">
           <div class="modal-content" (click)="$event.stopPropagation()">
             <div class="modal-header">
-              <h3>⭐ Give Feedback for Parcel</h3>
-              <button class="btn btn-sm btn-secondary" (click)="closeFeedbackModal()">✕</button>
+              <h3>Parcel Delivery Rating</h3>
+              <button class="btn btn-secondary btn-sm" (click)="closeFeedbackModal()">✕</button>
             </div>
-            <p style="color: #a0a3bd; font-size: 13px; margin-bottom: 16px;">
-              Booking ID: <strong>{{ selectedBookingForFeedback?.bookingId }}</strong> (Delivered to {{ selectedBookingForFeedback?.receiverName }})
+
+            <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 16px;">
+              Booking: <strong class="font-mono" style="color: var(--text-primary);">{{ selectedBookingForFeedback?.bookingId }}</strong>
+              (Recipient: {{ selectedBookingForFeedback?.receiverName }})
             </p>
 
             <div class="form-group">
-              <label>Rating (1 to 5 Stars) *</label>
-              <div class="star-rating">
-                <span *ngFor="let star of [1,2,3,4,5]" class="star" [class.active]="feedbackRating >= star" (click)="feedbackRating = star">★</span>
+              <label>Service Rating (1 to 5 Stars) *</label>
+              <div class="star-picker">
+                <span 
+                  *ngFor="let star of [1,2,3,4,5]" 
+                  class="star-item"
+                  [class.active]="feedbackRating >= star" 
+                  (click)="feedbackRating = star"
+                >★</span>
+                <span class="rating-label">({{ feedbackRating }} of 5 Stars)</span>
               </div>
             </div>
 
             <div class="form-group">
-              <label>Feedback Description *</label>
-              <textarea class="form-control" [(ngModel)]="feedbackDescription" placeholder="Share your delivery experience, packaging quality, timeliness, etc." rows="4"></textarea>
+              <label>Review Description *</label>
+              <textarea 
+                class="form-control" 
+                [(ngModel)]="feedbackDescription" 
+                placeholder="Share details on delivery speed, package condition, and overall service experience..." 
+                rows="4"
+              ></textarea>
             </div>
 
             <div class="modal-actions">
               <button class="btn btn-secondary" (click)="closeFeedbackModal()">Cancel</button>
               <button class="btn btn-primary" (click)="submitFeedback()" [disabled]="submittingFeedback">
-                {{ submittingFeedback ? 'Submitting...' : 'Submit Feedback' }}
+                {{ submittingFeedback ? 'Submitting...' : 'Post Review' }}
               </button>
             </div>
           </div>
         </div>
-
-      </div>
+      </main>
     </div>
   `,
   styles: [`
-    .header-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
-    .header-actions { display: flex; gap: 10px; }
-    .filter-card { padding: 20px; }
-    .table-section { padding: 24px; }
-    .amount-cell { font-weight: 600; color: #00d4aa; }
-    .action-cell { display: flex; gap: 6px; flex-wrap: wrap; }
-    .empty-state { text-align: center; padding: 48px; color: #6b7280; }
-    .pagination-container { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; flex-wrap: wrap; gap: 12px; }
-    .pagination-info { font-size: 13px; color: #a0a3bd; }
-    .star-rating { display: flex; gap: 8px; font-size: 28px; cursor: pointer; }
-    .star-rating .star { color: #4a4d6b; transition: all 0.2s; }
-    .star-rating .star.active { color: #ffc107; text-shadow: 0 0 10px rgba(255, 193, 7, 0.5); }
-    .star-rating .star:hover { transform: scale(1.2); }
+    .header-actions { display: flex; gap: 8px; }
+    .filter-card { padding: 18px; }
+    .filter-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 100px; gap: 14px; align-items: flex-end; }
+    .filter-reset-col { display: flex; align-items: flex-end; }
+    .table-card { padding: 20px; }
+    .action-buttons-wrap { display: flex; gap: 5px; flex-wrap: wrap; }
+    .pagination-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border-subtle); flex-wrap: wrap; gap: 12px; }
+    .pagination-summary { font-size: 12.5px; color: var(--text-muted); }
+    .empty-state { text-align: center; padding: 40px; color: var(--text-muted); }
+    .star-picker { display: flex; align-items: center; gap: 6px; }
+    .star-item { font-size: 26px; color: var(--border-hover); cursor: pointer; transition: all var(--transition-fast); }
+    .star-item.active { color: #fbbf24; text-shadow: 0 0 8px rgba(251, 191, 36, 0.4); }
+    .star-item:hover { transform: scale(1.15); }
+    .rating-label { font-size: 13px; color: var(--text-secondary); margin-left: 6px; font-weight: 600; }
+    @media (max-width: 992px) { .filter-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 640px) { .filter-grid { grid-template-columns: 1fr; } }
   `]
 })
 export class PreviousBookingsComponent implements OnInit {
@@ -191,7 +264,7 @@ export class PreviousBookingsComponent implements OnInit {
   successMessage = '';
   errorMessage = '';
 
-  // Feedback modal
+  // Feedback modal state
   showFeedbackModal = false;
   selectedBookingForFeedback: Booking | null = null;
   feedbackRating = 5;
@@ -215,7 +288,7 @@ export class PreviousBookingsComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
-        this.errorMessage = 'Failed to load booking history';
+        this.errorMessage = 'Failed to load shipment history';
       }
     });
   }
@@ -271,7 +344,7 @@ export class PreviousBookingsComponent implements OnInit {
 
   submitFeedback(): void {
     if (!this.feedbackDescription.trim()) {
-      this.errorMessage = 'Feedback description is required';
+      this.errorMessage = 'Please provide a feedback description';
       return;
     }
     if (!this.selectedBookingForFeedback) return;
@@ -289,7 +362,7 @@ export class PreviousBookingsComponent implements OnInit {
       next: (res: any) => {
         this.submittingFeedback = false;
         this.closeFeedbackModal();
-        this.successMessage = res.message || 'Feedback submitted successfully!';
+        this.successMessage = res.message || 'Feedback registered successfully!';
       },
       error: (err) => {
         this.submittingFeedback = false;
@@ -308,7 +381,7 @@ export class PreviousBookingsComponent implements OnInit {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `previous_bookings_${this.authService.getCustomerId()}.${format === 'xls' ? 'xls' : 'pdf.txt'}`;
+    a.download = `my_shipments_${this.authService.getCustomerId()}.${format === 'xls' ? 'xls' : 'txt'}`;
     a.click();
     URL.revokeObjectURL(url);
   }

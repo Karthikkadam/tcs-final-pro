@@ -14,69 +14,104 @@ import { Booking } from '../../models/models';
   template: `
     <div class="page-container">
       <app-navbar></app-navbar>
-      <div class="main-content">
+
+      <main class="main-content">
         <div class="page-header">
-          <h1>Cancel Booking</h1>
-          <p>{{ isOfficer ? 'Officer parcel cancellation & refund initiation' : 'Cancel your booked parcel delivery' }}</p>
+          <div>
+            <div class="role-badge" [ngClass]="isOfficer ? 'role-officer' : 'role-customer'" style="margin-bottom: 8px;">
+              {{ isOfficer ? 'Officer Refund Desk' : 'Customer Self-Service' }}
+            </div>
+            <h1>Cancel Parcel Shipment</h1>
+            <p>{{ isOfficer ? 'Process customer cancellation requests and initialize automatic refund dispatch' : 'Cancel an unfulfilled parcel booking and initiate a full refund' }}</p>
+          </div>
         </div>
 
+        <!-- Success Notification -->
         <div *ngIf="successMessage" class="alert alert-success">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
           <div>
-            <strong>✅ {{ successMessage }}</strong>
-            <div *ngIf="cancelledBookingId" style="margin-top: 6px; font-size: 13px;">
-              Cancelled Booking ID: <strong>{{ cancelledBookingId }}</strong>
-              <span *ngIf="cancelledAmount"> | Refund Amount: <strong>₹{{ cancelledAmount }}</strong></span>
+            <strong>{{ successMessage }}</strong>
+            <div *ngIf="cancelledBookingId" style="margin-top: 4px; font-size: 12.5px;">
+              Cancelled Reference: <strong class="font-mono">{{ cancelledBookingId }}</strong>
+              <span *ngIf="cancelledAmount"> | Refund Credit: <strong>₹{{ cancelledAmount }}</strong></span>
             </div>
           </div>
         </div>
 
-        <div *ngIf="errorMessage" class="alert alert-error">❌ {{ errorMessage }}</div>
+        <div *ngIf="errorMessage" class="alert alert-error">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          <span>{{ errorMessage }}</span>
+        </div>
 
-        <!-- Search Card -->
-        <div class="glass-card search-card">
-          <h3 class="section-title">🔍 Search Booking to Cancel</h3>
+        <!-- Policy Disclosure Card -->
+        <div class="card policy-card">
+          <div class="policy-header">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+            <strong>Cancellation & Refund Policy Guidelines:</strong>
+          </div>
+          <p>
+            {{ isOfficer 
+                ? 'Officers can cancel any booking in New, Scheduled, Picked Up, Assigned, or Booked state. Parcels marked as In Transit or Delivered cannot be cancelled.' 
+                : 'Customers can cancel parcels with status "Booked" before transit begins. Cancelled amounts are credited to the original source card within 5 working days.' }}
+          </p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="card search-card" style="margin-top: 20px;">
+          <h3 class="section-title">Lookup Booking to Cancel</h3>
           <div class="search-row">
-            <input type="text" class="form-control" [(ngModel)]="searchQuery" 
-                   [placeholder]="isOfficer ? 'Enter Booking ID, Customer ID, or Sender Name' : 'Enter Booking ID (e.g. BKG00001)'">
-            <button class="btn btn-primary" (click)="searchBooking()" [disabled]="searching">
-              {{ searching ? 'Searching...' : 'Search' }}
+            <input 
+              type="text" 
+              class="form-control" 
+              [(ngModel)]="searchQuery" 
+              [placeholder]="isOfficer ? 'Enter Booking ID, Customer ID, or Sender Name...' : 'Enter your Booking ID (e.g. BKG00001)...'"
+              (keyup.enter)="searchBooking()"
+            />
+            <button class="btn btn-primary btn-lg" (click)="searchBooking()" [disabled]="searching">
+              <span *ngIf="searching" class="spinner-sm"></span>
+              <span>{{ searching ? 'Searching...' : 'Search Shipment' }}</span>
             </button>
           </div>
         </div>
 
-        <!-- Search Results / Selected Booking -->
-        <div *ngIf="searchResults.length > 0" class="glass-card result-card" style="margin-top: 20px;">
-          <h3 class="section-title">📋 Matching Bookings</h3>
+        <!-- Results Table -->
+        <div *ngIf="searchResults.length > 0" class="card table-card" style="margin-top: 20px;">
+          <h3 class="section-title">Matching Shipments</h3>
+          
           <div class="table-container">
             <table>
               <thead>
                 <tr>
                   <th>Booking ID</th>
-                  <th>Customer ID</th>
+                  <th>Customer</th>
                   <th>Sender</th>
                   <th>Receiver</th>
-                  <th>Booking Date</th>
+                  <th>Date</th>
                   <th>Amount</th>
-                  <th>Current Status</th>
+                  <th>Status</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let b of searchResults">
-                  <td><strong>{{ b.bookingId }}</strong></td>
-                  <td>{{ b.customerId }}</td>
+                  <td><strong class="font-mono">{{ b.bookingId }}</strong></td>
+                  <td><span class="font-mono text-muted">{{ b.customerId }}</span></td>
                   <td>{{ b.senderName }}</td>
                   <td>{{ b.receiverName }}</td>
                   <td>{{ b.bookingDate }}</td>
-                  <td>₹{{ b.parcelServiceCost }}</td>
+                  <td><strong class="text-success">₹{{ b.parcelServiceCost }}</strong></td>
                   <td>
-                    <span class="badge" [ngClass]="'badge-' + b.status.toLowerCase().replace(' ', '')">{{ b.status }}</span>
+                    <span class="badge" [ngClass]="'badge-' + b.status.toLowerCase().replace(' ', '')">
+                      {{ b.status }}
+                    </span>
                   </td>
                   <td>
-                    <button *ngIf="canCancel(b)" class="btn btn-sm btn-danger" (click)="confirmCancel(b)" [disabled]="cancelling">
+                    <button *ngIf="canCancel(b)" class="btn btn-sm btn-outline-danger" (click)="confirmCancel(b)" [disabled]="cancelling">
                       ✕ Cancel Booking
                     </button>
-                    <span *ngIf="!canCancel(b)" class="text-muted" style="font-size: 12px;">
+                    <span *ngIf="!canCancel(b)" class="reason-badge">
                       {{ getCancelDisabledReason(b) }}
                     </span>
                   </td>
@@ -86,44 +121,74 @@ import { Booking } from '../../models/models';
           </div>
         </div>
 
-        <!-- Cancellation Confirmation Modal -->
+        <!-- 2-Step Confirmation Modal -->
         <div *ngIf="showConfirmModal" class="modal-overlay" (click)="showConfirmModal = false">
           <div class="modal-content" (click)="$event.stopPropagation()">
             <div class="modal-header">
-              <h3 style="color: #ff6b6b;">⚠️ Confirm Cancellation</h3>
-              <button class="btn btn-sm btn-secondary" (click)="showConfirmModal = false">✕</button>
+              <h3 style="color: #f87171;">Confirm Booking Cancellation</h3>
+              <button class="btn btn-secondary btn-sm" (click)="showConfirmModal = false">✕</button>
             </div>
 
-            <p style="color: #a0a3bd; font-size: 14px; margin-bottom: 16px;">
-              Are you sure you want to cancel booking <strong>{{ targetBooking?.bookingId }}</strong>?
+            <p style="color: var(--text-secondary); font-size: 13.5px; margin-bottom: 16px;">
+              Are you sure you want to cancel booking <strong class="font-mono" style="color: var(--text-primary);">{{ targetBooking?.bookingId }}</strong>?
             </p>
 
-            <div class="details-summary" *ngIf="targetBooking">
-              <div class="summary-row"><span>Receiver:</span><strong>{{ targetBooking.receiverName }}</strong></div>
-              <div class="summary-row"><span>Amount:</span><strong>₹{{ targetBooking.parcelServiceCost }}</strong></div>
-              <div class="summary-row"><span>Delivery Type:</span><strong>{{ targetBooking.parcelDeliveryType }}</strong></div>
-              <div class="summary-row" *ngIf="isOfficer"><span style="color: #00d4aa;">Refund Policy:</span><span>Refund processed within 5 working days</span></div>
+            <div class="cancel-summary-box" *ngIf="targetBooking">
+              <div class="cancel-row">
+                <span>Receiver:</span>
+                <strong>{{ targetBooking.receiverName }}</strong>
+              </div>
+              <div class="cancel-row">
+                <span>Refund Amount:</span>
+                <strong class="text-success">₹{{ targetBooking.parcelServiceCost }}</strong>
+              </div>
+              <div class="cancel-row">
+                <span>Refund Timeline:</span>
+                <span>Credited to source card within 5 working days</span>
+              </div>
             </div>
 
             <div class="modal-actions">
-              <button class="btn btn-secondary" (click)="showConfirmModal = false">No, Keep It</button>
+              <button class="btn btn-secondary" (click)="showConfirmModal = false">Keep Shipment</button>
               <button class="btn btn-danger" (click)="executeCancel()" [disabled]="cancelling">
-                {{ cancelling ? 'Cancelling...' : 'Yes, Cancel Booking' }}
+                <span *ngIf="cancelling" class="spinner-sm"></span>
+                <span>{{ cancelling ? 'Cancelling...' : 'Yes, Confirm Cancellation' }}</span>
               </button>
             </div>
           </div>
         </div>
-
-      </div>
+      </main>
     </div>
   `,
   styles: [`
-    .section-title { font-size: 16px; margin-bottom: 16px; }
+    .policy-card {
+      padding: 16px 20px;
+      background: rgba(37, 99, 235, 0.06);
+      border: 1px solid var(--primary-border);
+    }
+    .policy-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #60a5fa;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+    .policy-card p {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .search-card { padding: 20px; }
+    .section-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 14px; }
     .search-row { display: flex; gap: 12px; }
-    .search-row input { flex: 1; }
-    .details-summary { background: rgba(255, 107, 107, 0.05); border: 1px solid rgba(255, 107, 107, 0.2); border-radius: 10px; padding: 16px; margin-bottom: 20px; }
-    .summary-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; color: #a0a3bd; }
-    .summary-row strong { color: #fff; }
+    .table-card { padding: 20px; }
+    .reason-badge { font-size: 11.5px; color: var(--text-muted); font-style: italic; }
+    .cancel-summary-box { background: var(--bg-input); border: 1px solid var(--danger-border); border-radius: var(--radius-md); padding: 16px; margin-bottom: 20px; }
+    .cancel-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; color: var(--text-secondary); }
+    .cancel-row strong { color: var(--text-primary); }
+    .spinner-sm { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255, 255, 255, 0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.75s linear infinite; }
+    @media (max-width: 640px) { .search-row { flex-direction: column; } }
   `]
 })
 export class CancelBookingComponent implements OnInit {
@@ -197,20 +262,18 @@ export class CancelBookingComponent implements OnInit {
 
   canCancel(b: Booking): boolean {
     if (this.isOfficer) {
-      // Officer cannot cancel Delivered or InTransit
       if (b.status === 'Delivered' || b.status === 'InTransit' || b.status === 'Cancelled') {
         return false;
       }
       return true;
     } else {
-      // Customer can only cancel 'Booked' status
       return b.status === 'Booked';
     }
   }
 
   getCancelDisabledReason(b: Booking): string {
     if (b.status === 'Cancelled') return 'Already Cancelled';
-    if (b.status === 'Delivered') return 'Cannot cancel delivered parcel';
+    if (b.status === 'Delivered') return 'Delivered — cannot cancel';
     if (b.status === 'InTransit') return 'In Transit — cannot cancel';
     if (!this.isOfficer && b.status !== 'Booked') return `Status is ${b.status} (only Booked can be cancelled)`;
     return 'Not cancellable';
