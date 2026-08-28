@@ -1,15 +1,8 @@
-@REM Maven Wrapper startup batch script
+@echo off
 @setlocal
 
 set "DIR=%~dp0"
-"%DIR%maven\apache-maven-3.9.8\bin\mvn.cmd" %*
+set "DIR=%DIR:~0,-1%"
+"%JAVA_HOME%\bin\java.exe" -Dmaven.multiModuleProjectDirectory="%DIR%" -classpath "%DIR%\.mvn\wrapper\maven-wrapper.jar" org.apache.maven.wrapper.MavenWrapperMain %*
 
-if ERRORLEVEL 1 goto error
-goto end
-
-:error
-set ERROR_CODE=1
-
-:end
-@endlocal & set ERROR_CODE=%ERROR_CODE%
-exit /B %ERROR_CODE%
+@endlocal & exit /B %ERRORLEVEL%
