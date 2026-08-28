@@ -1,0 +1,19 @@
+backend run command 
+
+
+cd "C:\Users\3213172\Downloads\n\backend"
+
+$env:JAVA_HOME = "$env:LOCALAPPDATA\Programs\Eclipse Adoptium\jdk-25.0.4.101-hotspot"
+$env:Path = "$env:JAVA_HOME\bin;$env:Path"
+$env:MAVEN_OPTS = "-Dmaven.multiModuleProjectDirectory=$PWD"
+
+.\mvnw.cmd spring-boot:run
+
+
+
+
+
+frontend run command 
+
+cd "C:\Users\3213172\Downloads\n\frontend"
+npx ng serve --port 4200
